@@ -14,7 +14,7 @@ export const rushLanguage = LRLanguage.define({
             styleTags({
                 'for while loop if else return break continue': t.controlKeyword,
                 in: t.operatorKeyword,
-                'let fn': t.definitionKeyword,
+                'let fn mut': t.definitionKeyword,
                 as: t.keyword,
                 Bool: t.bool,
                 null: t.null,
@@ -25,7 +25,8 @@ export const rushLanguage = LRLanguage.define({
                 'CallExpr/MemberExpr/Property': t.function(t.propertyName),
                 'FnExpr/Ident': t.function(t.variableName),
                 'Parameters/Ident': t.local(t.variableName),
-                Comment: t.lineComment,
+                LineComment: t.lineComment,
+                BlockComment: t.blockComment,
                 Number: t.number,
                 Char: t.character,
                 '+ - "*" "/" % "**"': t.arithmeticOperator,

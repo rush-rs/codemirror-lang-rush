@@ -129,16 +129,22 @@ ContinueStmt {
   kw<"continue">
 }
 
-@skip { token_1 | Comment }
+@skip { token_1 | LineComment | BlockComment }
 
 @tokens {
     token_1 {
         " " | "\n" | "\t" | "\r"
     }
 
-    Comment {
+    LineComment {
         "//" ![\n]*
     }
+
+    BlockComment { "/*" blockCommentRest }
+
+    blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
+
+    blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
 
     InfixOp {
         "+" |
@@ -194,18 +200,10 @@ ContinueStmt {
         "'" (![\\'] | "\\" _)* "'"?
     }
 
-    EscapeChar {
-        "\\" |
-        "b" |
-        "n" |
-        "r" |
-        "t"
-    }
-
     "." "," ";"
     "(" ")" "{" "}" "[" "]"
 
-    @precedence { Comment, AssignOp, PrefixOp, InfixOp }
+    @precedence { LineComment, AssignOp, PrefixOp, InfixOp }
 }
 
 kw<term> { @specialize[@name={term}]<Ident, term> }
