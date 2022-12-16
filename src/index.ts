@@ -1,3 +1,4 @@
+import { completeFromList } from '@codemirror/autocomplete'
 import {
     delimitedIndent,
     foldInside,
@@ -20,17 +21,15 @@ export const rushLanguage = LRLanguage.define({
             }),
             styleTags({
                 'for while loop if else return break continue': t.controlKeyword,
-                in: t.operatorKeyword,
                 'let fn mut': t.definitionKeyword,
                 as: t.keyword,
                 Bool: t.bool,
-                null: t.null,
-                Type: t.typeName,
                 'VariableName/Ident': t.variableName,
                 'CallExpr/VariableName/Ident': t.function(t.variableName),
-                Property: t.propertyName,
-                'CallExpr/MemberExpr/Property': t.function(t.propertyName),
-                'FnExpr/Ident': t.function(t.variableName),
+                CallExpr: t.function(t.propertyName),
+                'CastExpr/Type': t.typeName,
+                'LetStmt/Type': t.typeName,
+                'FunctionDefinition/Ident': t.function(t.variableName),
                 'Parameters/Ident': t.local(t.variableName),
                 LineComment: t.lineComment,
                 BlockComment: t.blockComment,
@@ -40,10 +39,9 @@ export const rushLanguage = LRLanguage.define({
                 '|| &&': t.logicOperator,
                 '< <= > >= "!=" ==': t.compareOperator,
                 '=': t.definitionOperator,
-                '( ) { } [ ]': t.bracket,
+                '( ) { }': t.bracket,
                 '. , ;': t.separator,
                 BuiltinFunc: t.standard(t.function(t.variableName)),
-                BuiltinVar: t.standard(t.variableName),
             }),
         ],
     }),
@@ -52,6 +50,21 @@ export const rushLanguage = LRLanguage.define({
     },
 })
 
+export const rushCompletion = rushLanguage.data.of({
+    autocomplete: completeFromList([
+        { label: 'fn', type: 'keyword' },
+        { label: 'let', type: 'keyword' },
+        { label: 'return', type: 'keyword' },
+        { label: 'break', type: 'keyword' },
+        { label: 'continue', type: 'keyword' },
+        { label: 'if', type: 'keyword' },
+        { label: 'else', type: 'keyword' },
+        { label: 'loop', type: 'keyword' },
+        { label: 'while', type: 'keyword' },
+        { label: 'for', type: 'keyword' },
+    ]),
+})
+
 export function rush() {
-    return new LanguageSupport(rushLanguage)
+    return new LanguageSupport(rushLanguage, [rushCompletion])
 }

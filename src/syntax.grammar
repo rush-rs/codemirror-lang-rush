@@ -97,6 +97,10 @@ CastExpr {
     Expression kw<"as"> Type
 }
 
+Type {
+  @specialize[@name=Type]<Ident, "int" | "float" | "bool" | "char">
+}
+
 ArgumentList {
     Expression ( "," Expression )* ","?
 }
@@ -111,10 +115,6 @@ IfExpr {
 
 Bool {
   @specialize[@name=Bool]<Ident, "true" | "false">
-}
-
-Type {
-  @specialize[@name=Type]<Ident, "int" | "float" | "bool" | "char">
 }
 
 ReturnStmt {
