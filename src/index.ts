@@ -1,6 +1,13 @@
-import {parser} from "./syntax.grammar"
-import {LRLanguage, LanguageSupport, indentNodeProp, foldNodeProp, foldInside, delimitedIndent} from "@codemirror/language"
-import {styleTags, tags as t} from "@lezer/highlight"
+import {
+    delimitedIndent,
+    foldInside,
+    foldNodeProp,
+    indentNodeProp,
+    LanguageSupport,
+    LRLanguage,
+} from '@codemirror/language'
+import { styleTags, tags as t } from '@lezer/highlight'
+import { parser } from './syntax.grammar'
 
 export const rushLanguage = LRLanguage.define({
     parser: parser.configure({

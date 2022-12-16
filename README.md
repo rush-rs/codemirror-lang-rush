@@ -1,1 +1,1 @@
-# codemirror-lang-rush
+# CodeMirror 6 rush Language Support
