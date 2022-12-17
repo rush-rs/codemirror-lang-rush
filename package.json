@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "rush language support for CodeMirror",
   "license": "GPL-3.0-only",
+  "author": "MikMuellerDev",
   "scripts": {
     "prepare": "rollup -c"
   },
