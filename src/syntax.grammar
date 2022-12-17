@@ -16,10 +16,10 @@ item {
     FunctionDefinition | LetStmt
 }
 
-FunctionDefinition { kw<"fn"> Ident Parameters Block }
+FunctionDefinition { kw<"fn"> Ident Parameters ( "->" Type )? Block }
 
 Parameters {
-    "(" (Ident ("," Ident)*)? ")"
+    "(" (Ident ":" Type ("," Ident ":" Type )*)? ")"
 }
 
 Block {
@@ -78,6 +78,10 @@ ExprWithoutBlock {
     AssignExpr |
     CallExpr |
     CastExpr |
+    NestedExpr
+}
+
+NestedExpr {
     "(" Expression ")"
 }
 
@@ -98,7 +102,7 @@ CastExpr {
 }
 
 Type {
-  @specialize[@name=Type]<Ident, "int" | "float" | "bool" | "char">
+  @specialize<Ident, "int" | "float" | "bool" | "char">
 }
 
 ArgumentList {
