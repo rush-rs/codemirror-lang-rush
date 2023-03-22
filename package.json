@@ -1,6 +1,6 @@
 {
   "name": "codemirror-lang-rush",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "rush language support for CodeMirror",
   "license": "GPL-3.0-only",
   "author": "MikMuellerDev",
