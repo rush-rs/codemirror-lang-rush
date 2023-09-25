@@ -13,44 +13,51 @@
 }
 
 item {
-    FunctionDefinition | LetStmt
+    FunctionDefinition | SetzeStmt | BeantrageStmt
 }
 
-FunctionDefinition { kw<"fn"> Ident Parameters ( "->" Type )? Block }
+FunctionDefinition { kw<"funk"> Ident Parameters ( kw<"ergibt"> Type )? Block }
 
 Parameters {
-    "(" (Ident ":" Type ("," Ident ":" Type )*)? ")"
+    "(" (Type Ident (SlashDelimeter Type Ident)*)? ")"
 }
 
 Block {
   "{" Statement* Expression? "}"
 }
 
+BeantrageStmt {
+    kw<"beantrage"> BeantrageFn kw<"von"> BeantrageModule ";"
+}
+
+BeantrageFn {
+    Ident
+}
+
+BeantrageModule {
+    Ident
+}
+
 Statement {
-    ReturnStmt |
-    BreakStmt |
-    ContinueStmt |
-    LetStmt |
-    LoopStmt |
-    WhileStmt |
-    ForStmt |
+    UeberweiseStmt |
+    AbbrechenStmt |
+    WeitermachenStmt |
+    SetzeStmt |
+    AendereStmt |
+    SolangeStmt |
     ExprStmt
 }
 
-LetStmt {
-    kw<"let"> (kw<"mut">)? Ident ( ":" Type )? "=" Expression ";"
+SetzeStmt {
+    kw<"setze"> Type Ident kw<"auf"> Expression ";"
 }
 
-LoopStmt {
-    kw<"loop"> Block ";"?
+AendereStmt {
+    kw<"ändere"> Ident kw<"auf"> Expression ";"
 }
 
-WhileStmt {
-    kw<"while"> Expression Block ";"?
-}
-
-ForStmt {
-    kw<"for"> Ident "=" Expression ";" Expression ";" Expression Block ";"?
+SolangeStmt {
+    kw<"solange"> Expression Block ";"?
 }
 
 ExprStmt {
@@ -72,6 +79,8 @@ ExprWithoutBlock {
     Number |
     Bool |
     Char |
+    List |
+    String |
     VariableName |
     PrefixExpr |
     InfixExpr |
@@ -79,6 +88,10 @@ ExprWithoutBlock {
     CallExpr |
     CastExpr |
     NestedExpr
+}
+
+List {
+    "[" (Expression ( SlashDelimeter Expression )* ","?)? "]"
 }
 
 NestedExpr {
@@ -102,11 +115,11 @@ CastExpr {
 }
 
 Type {
-  @specialize<Ident, "int" | "float" | "bool" | "char">
+  @specialize<Ident, "Zahl" | "Fließkommazahl" | "Wahrheitswert" | "Zeichen" | "Zeichenkette" | "Nichts"> @specialize<Ident, "Liste"> kw<"von"> Type
 }
 
 ArgumentList {
-    Expression ( "," Expression )* ","?
+    Expression ( SlashDelimeter Expression )* ","?
 }
 
 InfixExpr {
@@ -114,23 +127,23 @@ InfixExpr {
 }
 
 IfExpr {
-  kw<"if"> Expression Block (kw<"else"> (IfExpr | Block))?
+  kw<"falls"> Expression Block (kw<"sonst"> (IfExpr | Block))?
 }
 
 Bool {
-  @specialize[@name=Bool]<Ident, "true" | "false">
+  @specialize[@name=Bool]<Ident, "ja" | "nein">
 }
 
-ReturnStmt {
-  !return kw<"return"> Expression?
+UeberweiseStmt {
+  !return kw<"überweise"> Expression? ";"
 }
 
-BreakStmt {
-  kw<"break">
+AbbrechenStmt {
+  kw<"abbrechen"> ";"
 }
 
-ContinueStmt {
-  kw<"continue">
+WeitermachenStmt {
+  kw<"weitermachen"> ";"
 }
 
 @skip { token_1 | LineComment | BlockComment }
@@ -154,7 +167,7 @@ ContinueStmt {
         "+" |
         "-" |
         "*" |
-        "/" |
+        ":" |
         "%" |
         "**" |
         "==" |
@@ -187,21 +200,26 @@ ContinueStmt {
         "^="
     }
 
+    SlashDelimeter {
+     "/"
+    }
+
     PrefixOp {
         "-"
         | "!"
     }
 
     Number {
-        $[0-9]+ ( ("." $[0-9]+)
-        | "f" )?
+        $[0-9]+ ( ("," $[0-9]+)
+        | "F" )?
         | '0x' hex (hex | "_")*
     }
 
-    word { $[a-zA-Z_] $[a-zA-Z0-9_]* }
+    word {
+        ($[a-zA-Z_] | "ü" | "ä" | "ö" | "ß") ($[a-zA-Z0-9_] | "ü" | "ä" | "ö" | "ß")* }
 
     hex {
-        $[0-9] 
+        $[0-9]
         | 'A'
         | 'B'
         | 'C'
@@ -222,10 +240,14 @@ ContinueStmt {
         "'" (![\\'] | "\\" _)* "'"?
     }
 
+    String {
+        '"' (![\\"] | "\\" _)* '"'?
+    }
+
     "." "," ";"
     "(" ")" "{" "}" "[" "]"
 
-    @precedence { LineComment, AssignOp, PrefixOp, InfixOp }
+    @precedence { LineComment, SlashDelimeter, AssignOp, PrefixOp, InfixOp }
 }
 
 kw<term> { @specialize[@name={term}]<Ident, term> }
